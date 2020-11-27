@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
@@ -224,6 +225,7 @@ public class PlayerWindow extends JFrame {
 				Line line = null;
 				//Bool as opened
 				boolean opened = true;
+				
 				//opening line
 				try {
 					line = mixer.getLine(lineInfo);
@@ -236,13 +238,120 @@ public class PlayerWindow extends JFrame {
 					FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
 					//Get current Volume
 					float currentVolume = volControl.getValue();
+					//Make a temp double and store valuePlusMinus
+					Double volumeToCut = valueToPlusMinus;
+					//float and calc the addition/subtraction
+					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+					//set changed Value
+					volControl.setValue(changedCalc);
 					
-					
-				} catch (Exception e) {
-					// TODO: handle exception
+				} catch (LineUnavailableException lineException) {
+				} catch (IllegalArgumentException illException)  {
+				} finally {
+					if(line != null && !opened) {
+						line.close();
+					}
 				}
 				
 			}
 		}
 	}
+	
+	//Volume Up Method
+	private void volumeDown(Double valueToPlusMinus) {
+		//Get Mixerinformation form Audiosystem
+		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+		//list all mixers
+		for(Mixer.Info mixerInfo : mixers) {
+			//get Mixer
+			Mixer mixer = AudioSystem.getMixer(mixerInfo);
+			//Target line get
+			Line.Info[] lineInfos = mixer.getTargetLineInfo();
+			//List Lines
+			for(Line.Info lineInfo : lineInfos) {
+				//Null line
+				Line line = null;
+				//Bool as opened
+				boolean opened = true;
+				
+				//opening line
+				try {
+					line = mixer.getLine(lineInfo);
+					opened = line.isOpen() || line instanceof Clip;
+					//check line not open
+					if(!opened) {
+						line.open();
+					}
+					//Flat control
+					FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+					//Get current Volume
+					float currentVolume = volControl.getValue();
+					//Make a temp double and store valuePlusMinus
+					Double volumeToCut = valueToPlusMinus;
+					//float and calc the addition/subtraction
+					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+					//set changed Value
+					volControl.setValue(changedCalc);
+					
+				} catch (LineUnavailableException lineException) {
+				} catch (IllegalArgumentException illException)  {
+				} finally {
+					if(line != null && !opened) {
+						line.close();
+					}
+				}
+				
+			}
+		}
+	}
+	
+	//Volume Mute Method
+	private void volumeDown(Double valueToPlusMinus) {
+		//Get Mixerinformation form Audiosystem
+		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+		//list all mixers
+		for(Mixer.Info mixerInfo : mixers) {
+			//get Mixer
+			Mixer mixer = AudioSystem.getMixer(mixerInfo);
+			//Target line get
+			Line.Info[] lineInfos = mixer.getTargetLineInfo();
+			//List Lines
+			for(Line.Info lineInfo : lineInfos) {
+				//Null line
+				Line line = null;
+				//Bool as opened
+				boolean opened = true;
+				
+				//opening line
+				try {
+					line = mixer.getLine(lineInfo);
+					opened = line.isOpen() || line instanceof Clip;
+					//check line not open
+					if(!opened) {
+						line.open();
+					}
+					//Flat control
+					FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+					//Get current Volume
+					float currentVolume = volControl.getValue();
+					//Make a temp double and store valuePlusMinus
+					Double volumeToCut = valueToPlusMinus;
+					//float and calc the addition/subtraction
+					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+					//set changed Value
+					volControl.setValue(changedCalc);
+					
+				} catch (LineUnavailableException lineException) {
+				} catch (IllegalArgumentException illException)  {
+				} finally {
+					if(line != null && !opened) {
+						line.close();
+					}
+				}
+				
+			}
+		}
+	}
+	
+	
 }
