@@ -7,6 +7,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.FlowLayout;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -33,15 +39,17 @@ public class PlayerWindow extends JFrame {
 	MP3Player player;
 	//Define File for Song
 	File songFile;
-	//Define Current Direcotry
+	//Define Current Direcotry home.user will open file chooser
 	String currentDirectory = "home.user";
 	String currentPath;
 	//For Images of the Song
 	String imagePath;
 	//Repeat of and check
-	Boolean check = false;
+	Boolean repeat = false;
+	
 	//Check if Window colapsed
 	Boolean windowCollapsed = false;
+	
 	//Mouse x,y seeds, (do I need them?)
 	int xMouse, yMouse;
 
@@ -130,16 +138,17 @@ public class PlayerWindow extends JFrame {
 		contentPane.add(lblSongName, BorderLayout.NORTH);
 		
 		
-//		// get File name
-//		String filename = songFile.getName();
-//		//set song name
-//		lblSongName.setText(filename);
-//		player = mp3Player();
-//		//song zu einer Playlist hinzufügen
-//		player.addToPlayList(songFile);
-//		//get img Path in strings
-//		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
-//		imagePath = "\\images";
+		// get File name
+		String filename = songFile.getName();
+		//set song name
+		lblSongName.setText(filename);
+		
+		player = mp3Player();
+		//song zu einer Playlist hinzufügen
+		player.addToPlayList(songFile);
+		//get img Path in strings
+		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+		imagePath = "\\images";
 		
 		
 		//ActionListener
@@ -197,5 +206,43 @@ public class PlayerWindow extends JFrame {
 	private MP3Player mp3Player(){
 		MP3Player mp3Player = new MP3Player();
 		return mp3Player;
+	}
+	
+	//Volume Down Method
+	private void volumeDown(Double valueToPlusMinus) {
+		//Get Mixerinformation form Audiosystem
+		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+		//list all mixers
+		for(Mixer.Info mixerInfo : mixers) {
+			//get Mixer
+			Mixer mixer = AudioSystem.getMixer(mixerInfo);
+			//Target line get
+			Line.Info[] lineInfos = mixer.getTargetLineInfo();
+			//List Lines
+			for(Line.Info lineInfo : lineInfos) {
+				//Null line
+				Line line = null;
+				//Bool as opened
+				boolean opened = true;
+				//opening line
+				try {
+					line = mixer.getLine(lineInfo);
+					opened = line.isOpen() || line instanceof Clip;
+					//check line not open
+					if(!opened) {
+						line.open();
+					}
+					//Flat control
+					FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+					//Get current Volume
+					float currentVolume = volControl.getValue();
+					
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+			}
+		}
 	}
 }
