@@ -139,17 +139,17 @@ public class PlayerWindow extends JFrame {
 		contentPane.add(lblSongName, BorderLayout.NORTH);
 		
 		
-		// get File name
-		String filename = songFile.getName();
-		//set song name
-		lblSongName.setText(filename);
-		
-		player = mp3Player();
-		//song zu einer Playlist hinzufügen
-		player.addToPlayList(songFile);
-		//get img Path in strings
-		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
-		imagePath = "\\images";
+//		// get File name
+//		String filename = songFile.getName();
+//		//set song name
+//		lblSongName.setText(filename);
+//		
+//		player = mp3Player();
+//		//song zu einer Playlist hinzufügen
+//		player.addToPlayList(songFile);
+//		//get img Path in strings
+//		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+//		imagePath = "\\images";
 		
 		
 		//ActionListener
@@ -258,7 +258,7 @@ public class PlayerWindow extends JFrame {
 	}
 	
 	//Volume Up Method
-	private void volumeDown(Double valueToPlusMinus) {
+	private void volumeUp(Double valueToPlusMinus) {
 		//Get Mixerinformation form Audiosystem
 		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 		//list all mixers
@@ -306,7 +306,7 @@ public class PlayerWindow extends JFrame {
 	}
 	
 	//Volume Mute Method
-	private void volumeDown(Double valueToPlusMinus) {
+	private void volumeMute(Double valueToPlusMinus) {
 		//Get Mixerinformation form Audiosystem
 		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 		//list all mixers
