@@ -164,18 +164,20 @@ public class PlayerWindow extends JFrame {
 		lblPause.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				player.stop();
 			}
 		});
 		
 		lblPlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				player.play();
 			}
 		});
 		
 		lblOpen.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e){
 			}
 		});
 		
