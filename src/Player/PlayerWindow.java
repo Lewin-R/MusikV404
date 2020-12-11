@@ -138,18 +138,19 @@ public class PlayerWindow extends JFrame {
 		lblSongName.setBackground(Color.LIGHT_GRAY);
 		contentPane.add(lblSongName, BorderLayout.NORTH);
 		
+		// Probleme mit diesem Abschnitt, möglich, dass die Quelle angegeben werden muss
+		songFile = new File("\\MusokV404\\src\\SoundTest\\0012766.mp3");
+		// get File name
+		String filename = songFile.getName();
+		//set song name
+		lblSongName.setText(filename);
 		
-//		// get File name
-//		String filename = songFile.getName();
-//		//set song name
-//		lblSongName.setText(filename);
-//		
-//		player = mp3Player();
-//		//song zu einer Playlist hinzufügen
-//		player.addToPlayList(songFile);
-//		//get img Path in strings
-//		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
-//		imagePath = "\\images";
+		player = mp3Player();
+		//song zu einer Playlist hinzufügen
+		player.addToPlayList(songFile);
+		//get img Path in strings
+		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
+		imagePath = "\\images";
 		
 		
 		//ActionListener
@@ -187,6 +188,7 @@ public class PlayerWindow extends JFrame {
 		lblVolDown.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+
 			}
 		});
 		
@@ -305,8 +307,8 @@ public class PlayerWindow extends JFrame {
 		}
 	}
 	
-	//Volume Mute Method
-	private void volumeMute(Double valueToPlusMinus) {
+	//Volume control Method
+	private void volumeControl(Double valueToPlusMinus) {
 		//Get Mixerinformation form Audiosystem
 		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 		//list all mixers
@@ -337,7 +339,7 @@ public class PlayerWindow extends JFrame {
 					//Make a temp double and store valuePlusMinus
 					Double volumeToCut = valueToPlusMinus;
 					//float and calc the addition/subtraction
-					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+					float changedCalc = (float) ((double)volumeToCut);
 					//set changed Value
 					volControl.setValue(changedCalc);
 					
