@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.FlowLayout;
 
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
@@ -392,6 +393,12 @@ public class PlayerWindow extends JFrame {
 			}
 		}
 	}
+	
+//	public int getDurationSeconds() {
+//		try {
+//			AudioInputStream audioStream = AudioSystem.getAudioInputStream(file)
+//		}
+//	}
 	
 	
 }
