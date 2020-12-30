@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.border.EmptyBorder;
 import java.awt.FlowLayout;
 
@@ -22,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -29,6 +31,11 @@ import java.nio.file.Paths;
 import java.awt.Toolkit;
 import java.awt.Font;
 import jaco.mp3.player.MP3Player;
+import javax.swing.BoxLayout;
+import javax.swing.SwingConstants;
+import javax.swing.JLayeredPane;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 //import jaco.mp3.player.MP3Player;
 
 public class PlayerWindow extends JFrame {
@@ -45,6 +52,14 @@ public class PlayerWindow extends JFrame {
 	String imagePath;
 	//Repeat of and check
 	Boolean repeat = false;
+	
+	Boolean paused = false;
+	
+	Boolean clicked = false;
+	
+	Boolean isMuted = false;
+	
+	
 	
 	//Check if Window colapsed
 	Boolean windowCollapsed = false;
@@ -74,6 +89,7 @@ public class PlayerWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public PlayerWindow() {
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PlayerWindow.class.getResource("/Images/LogoMakr-2AMGq5.png"))); //logomakr.com/2AMGq5
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,59 +103,53 @@ public class PlayerWindow extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(null);
-		panel.setBackground(Color.LIGHT_GRAY);
+		panel.setBackground(Color.DARK_GRAY);
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JLabel lblLoop = new JLabel("");
+		lblLoop.setToolTipText("Repeat");
 		lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIcon.png")));
 		panel.add(lblLoop);
 		
-		JLabel lblPause = new JLabel("");
-		lblPause.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
-		panel.add(lblPause);
-		
-		JLabel lblPlay = new JLabel("");
-		lblPlay.setBackground(Color.BLACK);
-		lblPlay.setForeground(Color.BLACK);
-		lblPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PlayIcon.png")));
-		panel.add(lblPlay);
-		
-		JLabel lblStop = new JLabel("");
-		lblStop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/StopIcon.png")));
-		panel.add(lblStop);
+		JLabel lblPauseAndPlay = new JLabel("");
+		lblPauseAndPlay.setToolTipText("Play / Pause");
+		lblPauseAndPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
+		panel.add(lblPauseAndPlay);
 		
 		JLabel lblOpen = new JLabel("");
+		lblOpen.setToolTipText("Open File");
 		lblOpen.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/FolderIcon.png")));
 		panel.add(lblOpen);
 		
 		JLabel lblShuffle = new JLabel("");
+		lblShuffle.setToolTipText("Shuffle");
 		lblShuffle.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/ShuffleIcon.png")));
 		panel.add(lblShuffle);
 		
-		JLabel lblVolDown = new JLabel("");
-		lblVolDown.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeDown.png")));
-		panel.add(lblVolDown);
+		JLabel lblVolControlAndMute = new JLabel("");
+		lblVolControlAndMute.setToolTipText("Mute / Unmute");
+		lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
+		panel.add(lblVolControlAndMute);
 		
-		JLabel lblVolUp = new JLabel("");
-		lblVolUp.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
-		panel.add(lblVolUp);
+		// Probleme mit diesem Abschnitt, möglich, dass die Quelle angegeben werden muss
+		songFile = new File("");
+		// get File name
+		String filename = songFile.getName();
 		
-		JLabel lblVolMute = new JLabel("");
-		lblVolMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeMute.png")));
-		panel.add(lblVolMute);
+		
+		
+		JPanel panel_1 = new JPanel();
+		contentPane.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		
 		JLabel lblSongName = new JLabel("");
+		lblSongName.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_1.add(lblSongName, BorderLayout.SOUTH);
 		lblSongName.setFont(new Font("Tahoma", Font.PLAIN, 21));
-		lblSongName.setForeground(Color.WHITE);
-		lblSongName.setBackground(Color.LIGHT_GRAY);
-		contentPane.add(lblSongName, BorderLayout.NORTH);
-		
-		// Probleme mit diesem Abschnitt, möglich, dass die Quelle angegeben werden muss
-		songFile = new File("\\MusokV404\\src\\SoundTest\\0012766.mp3");
-		// get File name
-		String filename = songFile.getName();
+		lblSongName.setForeground(Color.BLACK);
+		lblSongName.setBackground(Color.DARK_GRAY);
 		//set song name
 		lblSongName.setText(filename);
 		
@@ -149,6 +159,13 @@ public class PlayerWindow extends JFrame {
 		//get img Path in strings
 		currentPath = Paths.get(".").toAbsolutePath().normalize().toString();
 		imagePath = "\\images";
+		
+		
+		JSlider Volume = new JSlider(JSlider.HORIZONTAL);
+		Volume.setToolTipText("Volume");
+		Volume.setBackground(Color.DARK_GRAY);
+		Volume.setForeground(Color.LIGHT_GRAY);
+		panel.add(Volume);
 		
 		
 		//ActionListener
@@ -166,29 +183,26 @@ public class PlayerWindow extends JFrame {
 					repeat = false;
 					player.setRepeat(repeat);
 					
-					String image = currentPath+imagePath+"\\repeat_enabled.png";
+					String image = currentPath+imagePath+"\\repeat_disabled.png";
 				}
 			}
 		});
 		
-		lblPause.addMouseListener(new MouseAdapter() {
+		lblPauseAndPlay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				player.pause();
-			}
-		});
-		
-		lblPlay.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				player.play();
-			}
-		});
-		
-		lblStop.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				player.stop();
+				
+				
+				if(paused == false) {
+					player.pause();
+					paused = true;
+					lblPauseAndPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PlayIcon.png")));
+				}
+				else {
+					player.play();
+					paused = false;
+					lblPauseAndPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
+				}
 			}
 		});
 		
@@ -218,85 +232,125 @@ public class PlayerWindow extends JFrame {
 			}
 		});
 		
-		lblVolDown.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				volumeDown(0.1);
-			}
-		});
-		
-		lblVolUp.addMouseListener(new MouseAdapter() {
+		lblVolControlAndMute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				volumeUp(0.1);
-			}
-		});
-		
-		lblVolMute.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				volumeControl(0.0);
 				
+				if(clicked == false) {
+					volumeControl(0.0);
+					clicked = true;
+					lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeMute.png")));
+				}
+				else {
+					volumeControl(0.5);
+					lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
+					clicked = false;
+				}
 			}
 		});
 		
+		
+	
+//	lblVolControlAndMute.addMouseListener(new MouseAdapter() {
+//		
+//		@Override
+//		public void mouseEntered(MouseEvent arg0) {
+//			System.out.println("entered");
+//			layeredPane.add(Volume);
+//			
+//		}
+//		@Override
+//		public void mouseExited(MouseEvent e) {
+//			System.out.println("exited");
+//			layeredPane.remove(Volume);
+//			}
+//	
+//		});
+//	}
+	
+	Volume.addChangeListener(new ChangeListener() {
+		public void stateChanged(ChangeEvent e) {
+			
+			JSlider source = (JSlider)e.getSource();
+		    if (!source.getValueIsAdjusting()) {
+		        double volume = (double)source.getValue()/100;
+		        if (volume == 0.0) {
+		        	volumeControl(0.0);
+		        	isMuted = true;
+		        	lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeMute.png")));
+		        } else {
+		        	
+		        	if(isMuted = true && volume >= 0.1) {
+		        		System.out.println(volume);
+		        		volumeControl(volume);
+		        		isMuted = false;
+		        		lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
+		        	}
+		        	volumeControl(volume);
+		        	System.out.println(volume);
+		       }
+		    }
+		}
+	});
+	
 	}
+
 	
 	private MP3Player mp3Player(){
 		MP3Player mp3Player = new MP3Player();
 		return mp3Player;
 	}
 	
-	
 	//Variables for volume
 	
-	//Volume Down Method
-	private void volumeDown(Double valueToPlusMinus) {
-		//Get Mixerinformation form Audiosystem
-		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-		//list all mixers
-		for(Mixer.Info mixerInfo : mixers) {
-			//get Mixer
-			Mixer mixer = AudioSystem.getMixer(mixerInfo);
-			//Target line get
-			Line.Info[] lineInfos = mixer.getTargetLineInfo();
-			//List Lines
-			for(Line.Info lineInfo : lineInfos) {
-				//Null line
-				Line line = null;
-				//Bool as opened
-				boolean opened = true;
-				
-				//opening line
-				try {
-					line = mixer.getLine(lineInfo);
-					opened = line.isOpen() || line instanceof Clip;
-					//check line not open
-					if(!opened) {
-						line.open();
-					}
-					//Flat control
-					FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
-					//Get current Volume
-					float currentVolume = volControl.getValue();
-					//Make a temp double and store valuePlusMinus
-					Double volumeToCut = valueToPlusMinus;
-					//float and calc the addition/subtraction
-					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
-					//set changed Value
-					volControl.setValue(changedCalc);
+		//Volume Down Method
+		private void volumeDown(Double valueToPlusMinus) {
+			//Get Mixerinformation form Audiosystem
+			Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+			//list all mixers
+			for(Mixer.Info mixerInfo : mixers) {
+				//get Mixer
+				Mixer mixer = AudioSystem.getMixer(mixerInfo);
+				//Target line get
+				Line.Info[] lineInfos = mixer.getTargetLineInfo();
+				//List Lines
+				for(Line.Info lineInfo : lineInfos) {
+					//Null line
+					Line line = null;
+					//Bool as opened
+					boolean opened = true;
 					
-				} catch (LineUnavailableException lineException) {
-				} catch (IllegalArgumentException illException)  {
-				} finally {
-					if(line != null && !opened) {
-						line.close();
+					//opening line
+					try {
+						line = mixer.getLine(lineInfo);
+						opened = line.isOpen() || line instanceof Clip;
+						//check line not open
+						if(!opened) {
+							line.open();
+						}
+						//Flat control
+						FloatControl volControl = (FloatControl) line.getControl(FloatControl.Type.VOLUME);
+						//Get current Volume
+						float currentVolume = volControl.getValue();
+						//Make a temp double and store valuePlusMinus
+						Double volumeToCut = valueToPlusMinus;
+						//float and calc the addition/subtraction
+						float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+						//set changed Value
+						volControl.setValue(changedCalc);
+						
+					} catch (LineUnavailableException lineException) {
+					} catch (IllegalArgumentException illException)  {
+					} finally {
+						if(line != null && !opened) {
+							line.close();
+						}
 					}
+					
 				}
-				
 			}
 		}
-	}
+
 	
 	//Volume Up Method
 	private void volumeUp(Double valueToPlusMinus) {
