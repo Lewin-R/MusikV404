@@ -14,16 +14,13 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+import javax.swing.JOptionPane;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+
 import java.awt.Color;
-import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -50,10 +47,6 @@ public class PlayerWindow extends JFrame {
 	
 	//Check if Window colapsed
 	Boolean windowCollapsed = false;
-	
-	//Mouse x,y seeds, (do I need them?)
-	int xMouse, yMouse;
-
 	
 	/**
 	 * Launch the application.
@@ -102,7 +95,7 @@ public class PlayerWindow extends JFrame {
 		panel.add(lblLoop);
 		
 		JLabel lblPause = new JLabel("");
-		lblPause.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/StopIcon.png")));
+		lblPause.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
 		panel.add(lblPause);
 		
 		JLabel lblPlay = new JLabel("");
@@ -110,6 +103,10 @@ public class PlayerWindow extends JFrame {
 		lblPlay.setForeground(Color.BLACK);
 		lblPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PlayIcon.png")));
 		panel.add(lblPlay);
+		
+		JLabel lblStop = new JLabel("");
+		lblStop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/StopIcon.png")));
+		panel.add(lblStop);
 		
 		JLabel lblOpen = new JLabel("");
 		lblOpen.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/FolderIcon.png")));
@@ -158,13 +155,25 @@ public class PlayerWindow extends JFrame {
 		lblLoop.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				if(repeat == false) {
+					repeat = true;
+					player.setRepeat(repeat);
+					
+					String image = currentPath+imagePath+"\\repeat_enabled.png";
+				}
+				else if(repeat == true) {
+					repeat = false;
+					player.setRepeat(repeat);
+					
+					String image = currentPath+imagePath+"\\repeat_enabled.png";
+				}
 			}
 		});
 		
 		lblPause.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				player.stop();
+				player.pause();
 			}
 		});
 		
@@ -175,9 +184,30 @@ public class PlayerWindow extends JFrame {
 			}
 		});
 		
+		lblStop.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				player.stop();
+			}
+		});
+		
 		lblOpen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e){
+				JFileChooser openFileChooser = new JFileChooser(currentDirectory);
+				openFileChooser.setFileFilter(new FileTypeFilter(".mp3", "Open MP3 Files"));
+				int result = openFileChooser.showOpenDialog(null);
+				try {
+				if(result == openFileChooser.APPROVE_OPTION) {
+					songFile = openFileChooser.getSelectedFile();
+					player.addToPlayList(songFile);
+					player.skipForward();
+					currentDirectory = songFile.getAbsolutePath();
+					lblSongName.setText(songFile.getName());
+					}
+				} catch (Exception fce) {
+	                JOptionPane.showMessageDialog(null, fce.getMessage(), null, JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		
@@ -190,19 +220,22 @@ public class PlayerWindow extends JFrame {
 		lblVolDown.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-
+				volumeDown(0.1);
 			}
 		});
 		
 		lblVolUp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				volumeUp(0.1);
 			}
 		});
 		
 		lblVolMute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				volumeControl(0.0);
+				
 			}
 		});
 		
@@ -212,6 +245,9 @@ public class PlayerWindow extends JFrame {
 		MP3Player mp3Player = new MP3Player();
 		return mp3Player;
 	}
+	
+	
+	//Variables for volume
 	
 	//Volume Down Method
 	private void volumeDown(Double valueToPlusMinus) {
@@ -293,7 +329,7 @@ public class PlayerWindow extends JFrame {
 					//Make a temp double and store valuePlusMinus
 					Double volumeToCut = valueToPlusMinus;
 					//float and calc the addition/subtraction
-					float changedCalc = (float) ((float)currentVolume-(double)volumeToCut);
+					float changedCalc = (float) ((float)currentVolume+(double)volumeToCut);
 					//set changed Value
 					volControl.setValue(changedCalc);
 					
