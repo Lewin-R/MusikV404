@@ -52,11 +52,11 @@ public class PlayerWindow extends JFrame {
 	String imagePath;
 	//Repeat of and check
 	Boolean repeat = false;
-	
+	//For Paused Methode
 	Boolean paused = false;
-	
+	//For Klicked Methode
 	Boolean clicked = false;
-	
+	//For Muted Methode
 	Boolean isMuted = false;
 	
 	
@@ -73,6 +73,7 @@ public class PlayerWindow extends JFrame {
 				try {
 					PlayerWindow frame = new PlayerWindow();
 					
+					//Frame Properies are beeing set
 					frame.setTitle("Musokify");
 					frame.setSize((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()-50), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()-150)); //get screensize and set it up to it
 					frame.setVisible(true);
@@ -107,28 +108,45 @@ public class PlayerWindow extends JFrame {
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
+		//Skip Backwards
 		JLabel lblBackwards = new JLabel("");
 		lblBackwards.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/SkipBackwards.png")));
 		panel.add(lblBackwards);
 		
+		//Pause and Play
 		JLabel lblPauseAndPlay = new JLabel("");
 		lblPauseAndPlay.setToolTipText("Play / Pause");
 		lblPauseAndPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
 		panel.add(lblPauseAndPlay);
 		
+		//SkipForwards
 		JLabel lblForwards = new JLabel("");
 		lblForwards.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/SkipForwards.png")));
 		panel.add(lblForwards);
 		
+		//Open
 		JLabel lblOpen = new JLabel("");
 		lblOpen.setToolTipText("Open File");
 		lblOpen.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/FolderIcon.png")));
 		panel.add(lblOpen);
 		
+		//Loop
 		JLabel lblLoop = new JLabel("");
 		lblLoop.setToolTipText("Repeat");
 		lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIcon.png")));
 		panel.add(lblLoop);
+		
+		//shuffle
+		JLabel lblShuffle = new JLabel("");
+		lblShuffle.setToolTipText("Shuffle");
+		lblShuffle.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/ShuffleIcon.png")));
+		panel.add(lblShuffle);
+		
+		//VolumeMute
+		JLabel lblVolControlAndMute = new JLabel("");
+		lblVolControlAndMute.setToolTipText("Mute / Unmute");
+		lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
+		panel.add(lblVolControlAndMute);
 		
 		
 		//ActionListener
@@ -151,17 +169,7 @@ public class PlayerWindow extends JFrame {
 			}
 		});
 		
-		JLabel lblShuffle = new JLabel("");
-		lblShuffle.setToolTipText("Shuffle");
-		lblShuffle.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/ShuffleIcon.png")));
-		panel.add(lblShuffle);
-		
-		JLabel lblVolControlAndMute = new JLabel("");
-		lblVolControlAndMute.setToolTipText("Mute / Unmute");
-		lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
-		panel.add(lblVolControlAndMute);
-		
-		// Probleme mit diesem Abschnitt, möglich, dass die Quelle angegeben werden muss
+		//New File
 		songFile = new File("");
 		// get File name
 		String filename = songFile.getName();
@@ -199,7 +207,7 @@ public class PlayerWindow extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				
+				//check if Paused adn change Icon
 				if(paused == false) {
 					player.pause();
 					paused = true;
@@ -220,9 +228,11 @@ public class PlayerWindow extends JFrame {
 				openFileChooser.setFileFilter(new FileTypeFilter(".mp3", "Open MP3 Files"));
 				int result = openFileChooser.showOpenDialog(null);
 				try {
+					//checking if mp3
 				if(result == openFileChooser.APPROVE_OPTION) {
 					songFile = openFileChooser.getSelectedFile();
 					player.addToPlayList(songFile);
+					//For Autoplay after opended File
 					player.skipForward();
 					currentDirectory = songFile.getAbsolutePath();
 					lblSongName.setText(songFile.getName());
