@@ -148,6 +148,10 @@ public class PlayerWindow extends JFrame {
 		lblVolControlAndMute.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/VolumeUp.png")));
 		panel.add(lblVolControlAndMute);
 		
+		JPanel panel_1 = new JPanel();
+		contentPane.add(panel_1, BorderLayout.CENTER);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		
 		
 		//ActionListener
 		
@@ -155,11 +159,6 @@ public class PlayerWindow extends JFrame {
 		songFile = new File("");
 		// get File name
 		String filename = songFile.getName();
-		
-		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new BorderLayout(0, 0));
 		
 		
 		JLabel lblSongName = new JLabel("");
