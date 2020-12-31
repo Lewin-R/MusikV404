@@ -151,24 +151,6 @@ public class PlayerWindow extends JFrame {
 		
 		//ActionListener
 		
-		lblLoop.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(repeat == false) {
-					repeat = true;
-					player.setRepeat(repeat);
-					
-					String image = currentPath+imagePath+"\\repeat_enabled.png";
-				}
-				else if(repeat == true) {
-					repeat = false;
-					player.setRepeat(repeat);
-					
-					String image = currentPath+imagePath+"\\repeat_disabled.png";
-				}
-			}
-		});
-		
 		//New File
 		songFile = new File("");
 		// get File name
@@ -243,9 +225,49 @@ public class PlayerWindow extends JFrame {
 			}
 		});
 		
+		lblLoop.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				if(player.isShuffle() == false) {
+				if(repeat == false) {
+					repeat = true;
+					player.setRepeat(repeat);
+					
+					lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIconActive.png")));
+				}
+				else{
+					repeat = false;
+					player.setRepeat(repeat);
+					
+					lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIcon.png")));
+				}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "not possible to have both active", null, JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
 		lblShuffle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
+				if(player.isRepeat() ==false) {
+				if(player.isShuffle() == false) {
+					player.setShuffle(true);
+
+					lblShuffle.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/ShuffleIconActive.png")));
+				}
+				else {
+					player.setShuffle(false);
+
+					lblShuffle.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/ShuffleIcon.png")));
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "not possible to have both active", null, JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		
