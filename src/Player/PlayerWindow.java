@@ -107,20 +107,49 @@ public class PlayerWindow extends JFrame {
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JLabel lblLoop = new JLabel("");
-		lblLoop.setToolTipText("Repeat");
-		lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIcon.png")));
-		panel.add(lblLoop);
+		JLabel lblBackwards = new JLabel("");
+		lblBackwards.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/SkipBackwards.png")));
+		panel.add(lblBackwards);
 		
 		JLabel lblPauseAndPlay = new JLabel("");
 		lblPauseAndPlay.setToolTipText("Play / Pause");
 		lblPauseAndPlay.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/PauseIcon.png")));
 		panel.add(lblPauseAndPlay);
 		
+		JLabel lblForwards = new JLabel("");
+		lblForwards.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/SkipForwards.png")));
+		panel.add(lblForwards);
+		
 		JLabel lblOpen = new JLabel("");
 		lblOpen.setToolTipText("Open File");
 		lblOpen.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/FolderIcon.png")));
 		panel.add(lblOpen);
+		
+		JLabel lblLoop = new JLabel("");
+		lblLoop.setToolTipText("Repeat");
+		lblLoop.setIcon(new ImageIcon(PlayerWindow.class.getResource("/Images/RepeatIcon.png")));
+		panel.add(lblLoop);
+		
+		
+		//ActionListener
+		
+		lblLoop.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(repeat == false) {
+					repeat = true;
+					player.setRepeat(repeat);
+					
+					String image = currentPath+imagePath+"\\repeat_enabled.png";
+				}
+				else if(repeat == true) {
+					repeat = false;
+					player.setRepeat(repeat);
+					
+					String image = currentPath+imagePath+"\\repeat_disabled.png";
+				}
+			}
+		});
 		
 		JLabel lblShuffle = new JLabel("");
 		lblShuffle.setToolTipText("Shuffle");
@@ -136,7 +165,6 @@ public class PlayerWindow extends JFrame {
 		songFile = new File("");
 		// get File name
 		String filename = songFile.getName();
-		
 		
 		
 		JPanel panel_1 = new JPanel();
@@ -166,27 +194,6 @@ public class PlayerWindow extends JFrame {
 		Volume.setBackground(Color.DARK_GRAY);
 		Volume.setForeground(Color.LIGHT_GRAY);
 		panel.add(Volume);
-		
-		
-		//ActionListener
-		
-		lblLoop.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(repeat == false) {
-					repeat = true;
-					player.setRepeat(repeat);
-					
-					String image = currentPath+imagePath+"\\repeat_enabled.png";
-				}
-				else if(repeat == true) {
-					repeat = false;
-					player.setRepeat(repeat);
-					
-					String image = currentPath+imagePath+"\\repeat_disabled.png";
-				}
-			}
-		});
 		
 		lblPauseAndPlay.addMouseListener(new MouseAdapter() {
 			@Override
@@ -249,24 +256,19 @@ public class PlayerWindow extends JFrame {
 			}
 		});
 		
+		lblForwards.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				player.skipForward();
+			}
+		});
 		
-	
-//	lblVolControlAndMute.addMouseListener(new MouseAdapter() {
-//		
-//		@Override
-//		public void mouseEntered(MouseEvent arg0) {
-//			System.out.println("entered");
-//			layeredPane.add(Volume);
-//			
-//		}
-//		@Override
-//		public void mouseExited(MouseEvent e) {
-//			System.out.println("exited");
-//			layeredPane.remove(Volume);
-//			}
-//	
-//		});
-//	}
+		lblBackwards.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				player.skipBackward();
+			}
+		});
 	
 	Volume.addChangeListener(new ChangeListener() {
 		public void stateChanged(ChangeEvent e) {
@@ -448,11 +450,22 @@ public class PlayerWindow extends JFrame {
 		}
 	}
 	
-//	public int getDurationSeconds() {
-//		try {
-//			AudioInputStream audioStream = AudioSystem.getAudioInputStream(file)
-//		}
-//	}
+public void makePlaylist() {
+	JFileChooser openFileChooser = new JFileChooser(currentDirectory);
+	openFileChooser.setFileFilter(new FileTypeFilter(".mp3", "Open MP3 Files"));
+	int result = openFileChooser.showOpenDialog(null);
+	try {
+	if(result == openFileChooser.APPROVE_OPTION) {
+		songFile = openFileChooser.getSelectedFile();
+		player.addToPlayList(songFile);
+		currentDirectory = songFile.getAbsolutePath();
+		//lblSongName.setText(songFile.getName());
+		}
+	} catch (Exception fce) {
+        JOptionPane.showMessageDialog(null, fce.getMessage(), null, JOptionPane.ERROR_MESSAGE);
+	}
+	
+}
 	
 	
 }
